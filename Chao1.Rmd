@@ -54,14 +54,13 @@ set.seed(97310)
 
 # Introduction
 
+## Problématique
+
 <!-- Code HTML complémentaire après le titre de première partie pour éviter une diapo blache --> 
 <!-- Commande de saut de colonne HTML --> 
 <style>
   .forceBreak { -webkit-column-break-after: always; break-after: column; }
 </style>
-
-
-## Problématique
 
 Estimer la richesse (le nombre d'espèces) d'une communauté en forêt tropicale par exemple est difficile.
 
@@ -75,7 +74,8 @@ Des estimateurs de la richesse ont été développés pour estimer la richesse r
 \begincols
   \begincol{.3\textwidth}
 
-Inventaire d'une parcelle de Paracou, Sinamary, Guyane (https://paracou.cirad.fr)
+Inventaire d'une parcelle de Paracou, Sinamary, Guyane
+
 
 ```{r}
 library("entropart")
@@ -97,7 +97,8 @@ Espèce la plus abondante (wapa : $Eperua falcata$) : `r max(Paracou6_inv)` indi
 # Carte
 plot(Paracou6, asp=1, xlab="", ylab="")
 ```
-
+<https://paracou.cirad.fr>
+  
   \endcol
 \endcols
 
@@ -106,7 +107,7 @@ plot(Paracou6, asp=1, xlab="", ylab="")
 
 La parcelle est un échantillon de la communauté forestière locale.
 
-```{r}
+```{r, out.width='70%'}
 # Courbe rang-abondance
 autoplot(Paracou6_inv)
 ```
@@ -156,9 +157,7 @@ $$ 1-(1-p_s)^n$$
 
 ## Observer une espèce $\nu$ fois
 
-La probabilité d'observer l'espèce $\nu$ fois avant de ne plus l'observer dans le reste de l'inventaire est
-
-$$p_s^\nu(1-p_s)^{n-\nu}$$
+La probabilité d'observer l'espèce $\nu$ fois avant de ne plus l'observer dans le reste de l'inventaire est $p_s^\nu(1-p_s)^{n-\nu}$.
 
 La probabilité d'observer l'espèce $\nu$ fois dans l'inventaire est obtenue en prenant en compte toutes l'ordre des observations (combinaisons) : 
 
@@ -172,7 +171,7 @@ $${\mathbb E}({S}_{n}^{\nu}) = \binom{n}{\nu} \sum_s{p_s^\nu \left( 1-p_s \right
 
 Soit le vecteur $\mathbf{v_{\nu}}$ dans ${\mathbb R}^S$ dont les coordonnées sont
 
-$$p_s^\nu (1-p_s)^{(n/2)-\nu}$$
+$$p_s^{\nu/2} (1-p_s)^{(n-\nu)/2}$$
 
 Le carré de la norme du vecteur $\mathbf{v_0}$ est 
 
@@ -184,12 +183,12 @@ c'est-à-dire ${\mathbb E}({S}_{n}^{0})$, l'espérance du nombre d'espèces non 
 
 ## Représentation vectorielle
 
-Le carré de la norme du vecteur $\mathbf{v_1}$ est 
+Le carré de la norme du vecteur $\mathbf{v_2}$ est 
 
 $$\sum_s{p_s^2(1-p_s)^{n-2}} = \frac{2}{n(n-1)}{\mathbb E}({S}_{n}^{2})$$
 
 
-Enfin, le produit scalaire $\langle \mathbf{v_0}, \mathbf{v_1} \rangle$ vaut
+Enfin, le produit scalaire $\langle \mathbf{v_0}, \mathbf{v_2} \rangle$ vaut
 
 $$\sum_s{p_s(1-p_s)^{n-1}}=\frac{1}{n}{\mathbb E}({S}_{n}^{1}).$$
 
@@ -197,9 +196,12 @@ $$\sum_s{p_s(1-p_s)^{n-1}}=\frac{1}{n}{\mathbb E}({S}_{n}^{1}).$$
 
 Soient deux espèces telles que $p_1=0,4$ et $p_2=0,6$, et $n=6$.
 
-Le vecteur $\mathbf{v_0}$ a pour coordonnées $([1-0,4]^3;[1-0,6]^3)=(`r (1-0.4)^3`; `r (1-0.6)^3`)$.
+Le vecteur $\mathbf{v_0}$ a pour coordonnées 
+$$([1-0,4]^3;[1-0,6]^3)=(`r (1-0.4)^3`; `r (1-0.6)^3`)$$.
 
-Le vecteur $\mathbf{v_1}$ a pour coordonnées $(0,4 \times [1-0,4]^2;0,6 \times [1-0,6]^2)=(`r .4*(1-.4)^2`; `r .6*(1-.6)^2`)$.
+Le vecteur $\mathbf{v_2}$ a pour coordonnées 
+
+$$(0,4 \times [1-0,4]^2;0,6 \times [1-0,6]^2)=(`r .4*(1-.4)^2`; `r .6*(1-.6)^2`)$$.
 
 
 ## Représentation graphique
@@ -212,15 +214,15 @@ arrows(0, 0, .4*(1-.4)^2, .6*(1-.6)^2, col="red")
 
 Le vecteur $\mathbf{v_0}$ dont le carré de la norme est ${\mathbb E}({S}_{n}^{0})$ est en noir.
 
-Le vecteur $\mathbf{v_1}$ dont le carré de la norme est $\frac{2}{n(n-1)}{\mathbb E}({S}_{n}^{2})$ est en rouge.
+Le vecteur $\mathbf{v_2}$ dont le carré de la norme est $\frac{2}{n(n-1)}{\mathbb E}({S}_{n}^{2})$ est en rouge.
 
 
 ## Cauchy-Schwartz
 
 Le produit scalaire est inférieur au produit des normes des vecteurs. La relation reste valide au carré:
 
-$$\left[ \sum_s{(1-p_s)^n} \right] \left[ \sum_s{p_s^2(1-p_s)^{n-2}} \right] 
-   \ge \left[ \sum_s{p_s(1-p_s)^{n-1}} \right]^2$$
+$$\left[ \sum_s{p_s(1-p_s)^{n-1}} \right]^2
+  \le \left[ \sum_s{(1-p_s)^n} \right] \left[ \sum_s{p_s^2(1-p_s)^{n-2}} \right]$$
 
 
 En substituant les espérances et en réarrangeant:
@@ -249,9 +251,9 @@ Règle empirique [@Brose2003] : pas plus d'un tiers des espèces observées une 
 
 ## Simulation d'un inventaire
 
-Commauté log-normale de 300 espèces, comparable à la forêt de Barro Colorado Island. Echantillon de 1800 arbres (3 ha de forêt).
+Commauté log-normale de 300 espèces, comparable à la forêt de Barro Colorado Island, Panama. Echantillon de 1800 arbres (3 ha de forêt).
 
-```{r}
+```{r, out.width='80%'}
 library("entropart")
 # Taille de l'inventaire
 n <- 1800
@@ -292,6 +294,41 @@ Il existe des estimateurs plus versatiles, comme le Jackknife [@Burnham1978] :
 ```{r}
 Richness(Inventaire2)
 ```
+
+
+## Et Paracou ? {.columns-2} 
+
+\begincols
+  \begincol{.3\textwidth}
+
+6,25 ha inventoriés, environ 4000 arbres (mais la diversité est plus grande qu'à Panama !).
+
+Le nombre d'espèces observées est `r length(Paracou6_inv)`, dont `r sum(Paracou6_inv==1)` singletons.
+
+L'estimateur Chao1 donne `r round(Richness(Paracou6_inv, Correction="Chao1"))` espèces.
+
+  <p class="forceBreak"></p>
+  \endcol
+  \begincol{.7\textwidth}
+
+```{r, fig.asp=1, out.width='100%'}
+# Carte
+plot(Paracou6, asp=1, xlab="", ylab="")
+```
+
+  \endcol
+\endcols
+
+
+## Conclusion
+
+L'estimation de la richesse à partir d'un échantillon est possible sans faire aucune supposition sur la distribution des probabilités.
+
+Les estimateurs de ce type sont dits "non-paramétriques". Ils sont bien supérieurs aux autres approches (estimateurs paramétriques ou extrapolation de la courbe aire-espèce).
+
+L'estimateur de Chao est le plus connu. Il est très efficace quand l'échantillonnage est suffisant (moins d'un tiers de singletons).
+
+Pour en savoir plus : Mesures de la biodiversité (https://hal-agroparistech.archives-ouvertes.fr/cel-01205813)
 
 ## References {.smaller}
 
