@@ -1,8 +1,8 @@
-# Présentaton
+# Estimateur de biodiversité Chao1
 
-Description.
+Pour estimer le nombre d'espèces (richesse spécifique) d'une communauté à partir d'un échantillon, l'estimateur Chao1 est l'outil le plus utilisé.
 
-Adapter le lien ci-dessous pour pointer sur les pages web du dépôt.
+Sa construction est expliquée et son efficacité est testée sur des données simulées.
 
 [Lecture](https://Utilisateur.github.io/Depot/Presentation.html) ou [Téléchargement](https://Utilisateur.github.io/Depot/Presentation.pdf)
 
