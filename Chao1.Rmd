@@ -7,6 +7,9 @@ preamble: >
   \DeclareUnicodeCharacter{B0}{\textdegree}
 bibliography: Chao1.bib
 output:
+  ioslides_presentation:
+    logo: images/EcoFoG2020.png
+    widescreen: true
   beamer_presentation:
     df_print: kable
     fig_caption: no
@@ -14,9 +17,6 @@ output:
       in_header: EcoFoGBeamer.tex
     keep_tex: no
     slide_level: 2
-  ioslides_presentation:
-    logo: images/EcoFoG2020.png
-    widescreen: true
   slidy_presentation: default
 ---
 
@@ -62,7 +62,7 @@ set.seed(97310)
   .forceBreak { -webkit-column-break-after: always; break-after: column; }
 </style>
 
-Estimer la richesse (le nombre d'espèces) d'une communauté en forêt tropicale par exemple est difficile.
+Estimer la richesse (le nombre d'espèces) d'un système hyperdivers comme une communauté en forêt tropicale est difficile.
 
 Beaucoup d'espèces sont rares donc un échantillonnage aléatoire (inventaire) de taille raisonnable ne permet pas de les observer.
 
@@ -236,7 +236,7 @@ $${\mathbb E}({S}_{n}^{0})
 L'estimateur est obtenu en remplaçant les espérances par les valeurs observées:
 
 $$ {\hat{S}}_\mathit{Chao1} 
-   = {s}_{n}^{\ne 0} + \frac{\left(n-1 \right){\left({s}_{n}^{1}\right)}^2}{2n{{s}_{n}^{2}}}$$
+   = {s}_{obs} + \frac{\left(n-1 \right){\left({s}_{n}^{1}\right)}^2}{2n{{s}_{n}^{2}}}$$
 
 ## Usage
 
@@ -251,13 +251,15 @@ Règle empirique [@Brose2003] : pas plus d'un tiers des espèces observées une 
 
 ## Simulation d'un inventaire
 
-Commauté log-normale de 300 espèces, comparable à la forêt de Barro Colorado Island, Panama. Echantillon de 1800 arbres (3 ha de forêt).
+Commauté log-normale de 500 espèces, comparable à la forêt de Paracou. Echantillon de 4000 arbres (6 ha de forêt).
 
 ```{r, out.width='80%'}
 library("entropart")
 # Taille de l'inventaire
-n <- 1800
-Inventaire <- rCommunity(1, size=n, S = 300, Distribution="lnorm",  sd=1)
+n <- 4000
+Richesse <- 500
+Dispersion <- 1.25
+Inventaire <- rCommunity(1, size=n, S = Richesse, Distribution="lnorm",  sd=Dispersion)
 autoplot(Inventaire, Distribution="lnorm")
 ```
 
@@ -274,26 +276,75 @@ et doubletons : `r (s_2 <- sum(Inventaire==2))`.
 Estimateur Chao1 : `r round(s_obs + (n-1)*s_1^2/2/n/s_2)` espèces.
 
 
+## Test de l'estimateur {.columns-2} 
 
-## Sous-échantillonnage
+\begincols
+  \begincol{.4\textwidth}
 
-En limitant l'inventaire 600 arbres, environ 1 ha :
+
+```{r}
+NbSimulations <- 10000
+```
+
+Simulation d'un grand nombre d'inventaires (`r format(NbSimulations, scientific=FALSE)`) et estimation de la richesse à chaque simulation.
+
+```{r}
+# Simulation des inventaires
+Inventaires <- rCommunity(NbSimulations, size=n, S = Richesse, Distribution="lnorm",  sd=Dispersion)
+# Estimation
+Richesses <- apply(Inventaires$Nsi, 2, Richness, Correction="Chao1")
+Biais <- mean(Richesses)-Richesse
+Variance <- var(Richesses)
+MSE <- sqrt(Biais^2 + Variance)
+```
+
+Le biais $b$ est l'écart entre l'estimation moyenne et la vraie valeur : **`r round(Biais)`** espèces.
+
+La variance empirique de l'estimateur est $\sigma^2$. L'erreur moyenne attendue de l'estimateur est $\sqrt{b^2+\sigma^2}$, exprimée en pourcentage de la valeur réelle : **`r round(MSE/Richesse*100)`\%**.
+
+  <p class="forceBreak"></p>
+  \endcol
+  \begincol{.6\textwidth}
+  
+```{r, out.width='100%'}
+plot(as.SimTest(Richesse, Richesses), main="Distribution des estimations")
+```
+
+  \endcol
+\endcols
+
+
+## Sous-échantillonnage {.columns-2} 
+
+\begincols
+  \begincol{.4\textwidth}
+
+En limitant l'inventaire 600 arbres, environ 1 ha, la sous-estimation devient forte.
 
 ```{r}
 # Taille de l'inventaire
-n <- 600
-Inventaire2 <- rCommunity(1, size=n, Distribution="lnorm",  sd=1)
+n_reduit <- 600
+# Simulation des inventaires
+Inventaires_reduits <- rCommunity(NbSimulations, size=n_reduit, S = Richesse, Distribution="lnorm",  sd=Dispersion)
+# Estimation
+Richesses_reduit <- apply(Inventaires_reduits$Nsi, 2, Richness, Correction="Chao1")
+Biais_reduit <- mean(Richesses_reduit)-Richesse
+Variance_reduit <- var(Richesses_reduit)
+MSE_reduit <- sqrt(Biais_reduit^2 + Variance_reduit)
 ```
 
-Estimateur Chao1 : `r round(Richness(Inventaire2, Correction = "Chao1"))` espèces, très sous-estimé.
+L'erreur moyenne est maintenant : **`r round(MSE_reduit/Richesse*100)`\%**.
 
-Nombre d'espèces observées : `r sum(Inventaire2>0)`, dont `r sum(Inventaire2 == 1)` singletons.
-
-Il existe des estimateurs plus versatiles, comme le Jackknife [@Burnham1978] :
-
-```{r}
-Richness(Inventaire2)
+ <p class="forceBreak"></p>
+  \endcol
+  \begincol{.6\textwidth}
+  
+```{r, out.width='100%'}
+plot(as.SimTest(Richesse, Richesses_reduit), main="Distribution des estimations")
 ```
+
+  \endcol
+\endcols
 
 
 ## Et Paracou ? {.columns-2} 
@@ -301,7 +352,7 @@ Richness(Inventaire2)
 \begincols
   \begincol{.3\textwidth}
 
-6,25 ha inventoriés, environ 4000 arbres (mais la diversité est plus grande qu'à Panama !).
+6,25 ha inventoriés, environ 4000 arbres.
 
 Le nombre d'espèces observées est `r length(Paracou6_inv)`, dont `r sum(Paracou6_inv==1)` singletons.
 
@@ -331,5 +382,9 @@ L'estimateur de Chao est le plus connu. Il est très efficace quand l'échantill
 Pour en savoir plus : Mesures de la biodiversité (https://hal-agroparistech.archives-ouvertes.fr/cel-01205813)
 
 ## References {.smaller}
+
+Ce document est entièrement reproductible grâce à [RMarkdown](https://rmarkdown.rstudio.com/). Son code source est hébergé sur GitHub : <https://github.com/EricMarcon/Chao1>.
+
+Bibliographie :
 
 \tiny
