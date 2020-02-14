@@ -5,6 +5,7 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 preamble: >
   \usepackage{textcomp}
   \DeclareUnicodeCharacter{B0}{\textdegree}
+bibliography: Chao1.bib
 output:
   ioslides_presentation:
     logo: images/EcoFoG2020.png
@@ -38,7 +39,7 @@ Library <- function(Packages) {
   invisible(sapply(Packages, InstallAndLoad))
 }
 # Ajouter les packages nécessaires ici
-Library(c("kableExtra", "tidyverse"))
+Library(c("kableExtra", "tidyverse", "entropart"))
 # Set ggplotting to bw plot default, but with transparent background elements.  
 theme_set(theme_bw(base_size=12))
 theme_update(panel.background = element_rect(fill = "transparent", colour = NA),
@@ -65,6 +66,8 @@ Estimer la richesse
 ## Estimateur Chao1
 
 Historique
+
+[@Chao2004]
 
 # Construction de l'estimateur
 
@@ -174,4 +177,55 @@ $$ {\hat{S}}_\mathit{Chao1}
 
 Il s'agit d'un estimateur minimum: l'espérance du nombre d'espèces est supérieure ou égale au nombre estimé.
 
-L'estimation est bonne tant que l'inventaire n'est pas trop sous-échantilonné. Règle au doigt mouillé : pas plus d'un tiers des espèces observées une seule fois. Au-delà: sous estimation importante.
+L'estimation est bonne tant que l'inventaire n'est pas trop sous-échantilonné. Règle au doigt mouillé [@Brose2003] : pas plus d'un tiers des espèces observées une seule fois. Au-delà: sous estimation importante.
+
+
+# Application
+
+## Simulation d'un inventaire
+
+Commauté log-normale.
+
+```{r}
+library("entropart")
+# Taille de l'inventaire
+n <- 1800
+Inventaire <- rCommunity(1, size=n, Distribution="lnorm",  sd=1)
+autoplot(Inventaire, Distribution="lnorm")
+```
+## Estimation
+
+Nombre d'espèces observées
+```{r}
+(s_obs <- sum(Inventaire >0))
+# Dont singletons
+(s_1 <- sum(Inventaire==1))
+# et doubletons
+(s_2 <- sum(Inventaire==2))
+```
+
+Estimateur Chao1
+
+```{r}
+s_obs + (n-1)*s_1^2/2/n/s_2
+```
+
+## Sous-échantillonnage
+
+```{r}
+# Taille de l'inventaire
+n <- 600
+Inventaire2 <- rCommunity(1, size=n, Distribution="lnorm",  sd=1)
+# Fonction dédiée dans le pakage entropart
+Richness(Inventaire2, Correction = "Chao1")
+```
+
+Estimateur plus souple [@Burnham1978]
+
+```{r}
+Richness(Inventaire2)
+```
+
+## References {.smaller}
+
+\tiny
