@@ -4,4 +4,4 @@ Pour estimer le nombre d'espèces (richesse spécifique) d'une communauté à pa
 
 Sa construction est expliquée et son efficacité est testée sur des données simulées.
 
-[Lecture]( https://ericmarcon.github.io/Chao1/Presentation.html) ou [Téléchargement]( https://ericmarcon.github.io/Chao1/Presentation.pdf)
+[Lecture](https://ericmarcon.github.io/Chao1/Chao1.html) ou [Téléchargement]( https://ericmarcon.github.io/Chao1/Chao1.pdf)
