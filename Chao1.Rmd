@@ -1,0 +1,177 @@
+---
+title: "L'estimateur Chao1"
+author: "Eric Marcon"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+preamble: >
+  \usepackage{textcomp}
+  \DeclareUnicodeCharacter{B0}{\textdegree}
+output:
+  ioslides_presentation:
+    logo: images/EcoFoG2020.png
+    widescreen: true
+  beamer_presentation:
+    df_print: kable
+    fig_caption: no
+    includes:
+      in_header: EcoFoGBeamer.tex
+    keep_tex: no
+    slide_level: 2
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+### knitr and R options (packages, ...)
+# echo=FALSE not to display R chunk in slides. Set to TRUE if necessary.
+knitr::opts_chunk$set(echo = FALSE)
+# tidy R chunks.
+knitr::opts_chunk$set(tidy=TRUE, tidy.opts=list(blank=FALSE, width.cutoff=50))
+# R console width
+options(width=50)
+# Plot margins
+par(mar = c(2, 2, 2, 2))
+# Installation des packages si nécessaire et chargement
+Library <- function(Packages) {
+  InstallAndLoad <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {install.packages(Package, repos="https://cran.rstudio.com/")}
+    require(Package, character.only = TRUE)
+  }
+  invisible(sapply(Packages, InstallAndLoad))
+}
+# Ajouter les packages nécessaires ici
+Library(c("kableExtra", "tidyverse"))
+# Set ggplotting to bw plot default, but with transparent background elements.  
+theme_set(theme_bw(base_size=12))
+theme_update(panel.background = element_rect(fill = "transparent", colour = NA),
+             plot.background = element_rect(fill = "transparent", colour = NA))
+knitr::opts_chunk$set(dev.args=list(bg="transparent"))
+# Tibbles: 5 lines, fit to slide width
+options(tibble.print_min = 5, tibble.width = 50)
+```
+
+
+# Introduction
+
+<!-- Code HTML complémentaire après le titre de première partie pour éviter une diapo blache --> 
+<!-- Commande de saut de colonne HTML --> 
+<style>
+  .forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+
+
+## Problématique
+
+Estimer la richesse
+
+## Estimateur Chao1
+
+Historique
+
+# Construction de l'estimateur
+
+## Notations
+
+Un inventaire de $n$ individus tirés indépendamment et aléatoirement est réalisé dans une communauté.
+
+Les individus appartiennent à l'espèce $s$ avec la probabilité $p_s$, $\sum_1^S{p_s}=1$.
+
+L'inventaire manque quelques espèces parmi les moins fréquentes : seules $S_{obs} espèces sont observées.
+
+## Observer une espèce
+
+La probabilité qu'un individu inventorié ne soit pas de l'espèce $s$ est 
+
+$$1-p_s$$
+
+La probabilité de ne pas inclure l'espèce $s$ dans l'inventaire est 
+
+$$(1-p_s)^n$$
+
+La probabilité d'inclure l'espèce est donc
+
+$$ 1-(1-p_s)^n$$
+
+## Observer une espèce $\nu$ fois
+
+La probabilité d'observer l'espèce $\nu$ fois avant de ne plus l'observer dans le reste de l'inventaire est
+
+$$p_s^\nu(1-p_s)^{n-\nu}$$
+
+La probabilité d'observer l'espèce $\nu$ fois dans l'inventaire est obtenue en prenant en compte toutes les combinaisons 
+
+$$\binom{n}{\nu}p_s^\nu(1-p_s)^{n-\nu}$$
+
+L'espérance du nombre d'espèces observées $\nu$ fois est obtenue en sommant cette probabilité sur toutes les espèces
+
+$${\mathbb E}({s}_{n}^{\nu}) = \binom{n}{\nu} \sum_s{p_s^\nu \left( 1-p_s \right)^{n-\nu}}$$
+
+## Représentation vectorielle
+
+Soit le vecteur $\mathbf{v_{a,b}}$ dans ${\mathbb E}^S$ dont les coordonnées sont
+
+$$p_s^a (1-p_s)^b$$
+
+Le carré de la norme du vecteur $\mathbf{v_{0,n/2}}$ est 
+
+$$\sum_s{(1-p_s)^n},$$
+c'est-à-dire ${\mathbb E}({s}_{n}^{0})$, l'espérance du nombre d'espèces non observées.
+
+
+## Représentation vectorielle
+
+Le carré de la norme du vecteur $\mathbf{v_{1,(n/2)-1}}$ est 
+
+$$\sum_s{p_s^2(1-p_s)^{n-2}} = \frac{2}{n(n-1)}{\mathbb E}({s}_{n}^{2})$$
+
+
+Enfin, le produit scalaire $\langle \mathbf{v_{0,n/2}}, \mathbf{v_{1,(n/2)-1}} \rangle$ vaut
+
+$$\sum_s{p_s(1-p_s)^{n-1}}=\frac{1}{n}{\mathbb E}({s}_{n}^{1}).$$
+
+## Représentation graphique
+
+Soient deux espèces telles que $p_1=0,4$ et $p_2=0,6$, et $n=6$.
+
+Le vecteur $\mathbf{v_{0,n/2}}$ a pour coordonnées $([1-0,4]^3;[1-0,6]^3)=(`r (1-0.4)^3`; `r (1-0.6)^3`)$.
+
+Le vecteur $\mathbf{v_{1,(n/2)-1}}$ a pour coordonnées $(0,4 \times [1-0,4]^2;0,6 \times [1-0,6]^2)=(`r .4*(1-.4)^2`; `r .6*(1-.6)^2`)$.
+
+
+## Représentation graphique
+
+```{r vecteurs, out.width='65%'}
+plot(x=c(0, (1-.4)^3, .4*(1-.4)^2), y=c(0, (1-.6)^3, .6*(1-.6)^2), type="n", xlab="", ylab="", asp=1)
+arrows(0, 0, (1-0.4)^3, (1-0.6)^3)
+arrows(0, 0, .4*(1-.4)^2, .6*(1-.6)^2, col="red")
+```
+
+Le vecteur $\mathbf{v_{0,n/2}}$ dont le carré de la norme est ${\mathbb E}({s}_{n}^{0})$ est en noir.
+
+Le vecteur $\mathbf{v_{1,(n/2)-1}}$ dont le carré de la norme est $\frac{2}{n(n-1)}{\mathbb E}({s}_{n}^{2})$ est en rouge.
+
+
+## Cauchy-Schwartz
+
+Le produit scalaire est inférieur au produit des normes des vecteurs. La relation reste valide au carré:
+
+$$\left[ \sum_s{(1-p_s)^n} \right] \left[ \sum_s{p_s^2(1-p_s)^{n-2}} \right] 
+   \ge \left[ \sum_s{p_s(1-p_s)^{n-1}} \right]^2$$
+
+
+En substituant les espérances et en réarrangeant:
+
+$${\mathbb E}({s}_{n}^{0}) 
+  \ge \frac{n-1}{n}\frac{\left[ {\mathbb E}({s}_{n}^{1}) \right]^2}{2 {\mathbb E}({s}_{n}^{2})}$$
+
+
+## Estimateur
+
+L'estimateur est obtenu en remplaçant les espérances par les valeurs observées:
+
+$$ {\hat{S}}_\mathit{Chao1} 
+   = {s}_{n}^{\ne 0} + \frac{\left(n-1 \right){\left({s}_{n}^{1}\right)}^2}{2n{{s}_{n}^{2}}}$$
+
+## Discussion
+
+Il s'agit d'un estimateur minimum: l'espérance du nombre d'espèces est supérieure ou égale au nombre estimé.
+
+L'estimation est bonne tant que l'inventaire n'est pas trop sous-échantilonné. Règle au doigt mouillé : pas plus d'un tiers des espèces observées une seule fois. Au-delà: sous estimation importante.
