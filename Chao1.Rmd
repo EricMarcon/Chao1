@@ -7,9 +7,6 @@ preamble: >
   \DeclareUnicodeCharacter{B0}{\textdegree}
 bibliography: Chao1.bib
 output:
-  ioslides_presentation:
-    logo: images/EcoFoG2020.png
-    widescreen: true
   beamer_presentation:
     df_print: kable
     fig_caption: no
@@ -17,6 +14,9 @@ output:
       in_header: EcoFoGBeamer.tex
     keep_tex: no
     slide_level: 2
+  ioslides_presentation:
+    logo: images/EcoFoG2020.png
+    widescreen: true
   slidy_presentation: default
 ---
 
@@ -115,6 +115,16 @@ autoplot(Paracou6_inv)
 Question : combien y a-t-il d'espèces d'arbres dans cette communauté ?
 
 
+## Courbe d'accumulation
+
+
+```{r, out.width='70%'}
+autoplot(DivAC(Paracou6_inv, n.seq = 1:20000))
+```
+
+Espérance du nombre d'espèces échanitillonnées en fonction de la taille de l'inventaire.
+
+
 ## Estimateur Chao1
 
 Développé par Anne Chao [@Chao2004].
@@ -159,7 +169,7 @@ $$ 1-(1-p_s)^n$$
 
 La probabilité d'observer l'espèce $\nu$ fois avant de ne plus l'observer dans le reste de l'inventaire est $p_s^\nu(1-p_s)^{n-\nu}$.
 
-La probabilité d'observer l'espèce $\nu$ fois dans l'inventaire est obtenue en prenant en compte toutes l'ordre des observations (combinaisons) : 
+La probabilité d'observer l'espèce $\nu$ fois dans l'inventaire est obtenue en prenant en compte l'ordre des observations (combinaisons) : 
 
 $$\binom{n}{\nu}p_s^\nu(1-p_s)^{n-\nu}$$
 
