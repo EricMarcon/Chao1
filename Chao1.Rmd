@@ -7,6 +7,9 @@ preamble: >
   \DeclareUnicodeCharacter{B0}{\textdegree}
 bibliography: Chao1.bib
 output:
+  ioslides_presentation:
+    logo: images/EcoFoG2020.png
+    widescreen: true
   beamer_presentation:
     df_print: kable
     fig_caption: no
@@ -14,9 +17,6 @@ output:
       in_header: EcoFoGBeamer.tex
     keep_tex: no
     slide_level: 2
-  ioslides_presentation:
-    logo: images/EcoFoG2020.png
-    widescreen: true
   slidy_presentation: default
 ---
 
@@ -227,7 +227,7 @@ Le vecteur $\mathbf{v_0}$ dont le carré de la norme est ${\mathbb E}({S}_{n}^{0
 Le vecteur $\mathbf{v_2}$ dont le carré de la norme est $\frac{2}{n(n-1)}{\mathbb E}({S}_{n}^{2})$ est en rouge.
 
 
-## Cauchy-Schwartz
+## Cauchy-Schwarz
 
 Le produit scalaire est inférieur au produit des normes des vecteurs. La relation reste valide au carré:
 
