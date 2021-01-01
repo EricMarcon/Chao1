@@ -17,7 +17,6 @@ output:
       in_header: EcoFoGBeamer.tex
     keep_tex: no
     slide_level: 2
-  slidy_presentation: default
 ---
 
 ```{r setup, include=FALSE}
@@ -122,7 +121,7 @@ Question : combien y a-t-il d'espèces d'arbres dans cette communauté ?
 autoplot(DivAC(Paracou6_inv, n.seq = 1:20000))
 ```
 
-Espérance du nombre d'espèces échanitillonnées en fonction de la taille de l'inventaire.
+Espérance du nombre d'espèces échantillonnées en fonction de la taille de l'inventaire.
 
 
 ## Estimateur Chao1
