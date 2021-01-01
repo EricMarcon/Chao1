@@ -251,7 +251,7 @@ $$ {\hat{S}}_\mathit{Chao1}
 
 Il s'agit d'un estimateur minimum : l'espérance du nombre d'espèces est supérieure ou égale au nombre estimé.
 
-L'estimation est bonne tant que l'inventaire n'est pas trop sous-échantilonné. 
+L'estimation est bonne tant que l'inventaire n'est pas trop sous-échantillonné. 
 
 Règle empirique [@Brose2003] : pas plus d'un tiers des espèces observées une seule fois. Au-delà: sous estimation importante.
 
@@ -260,7 +260,7 @@ Règle empirique [@Brose2003] : pas plus d'un tiers des espèces observées une 
 
 ## Simulation d'un inventaire
 
-Commauté log-normale de 500 espèces, comparable à la forêt de Paracou. Echantillon de 4000 arbres (6 ha de forêt).
+Communauté log-normale de 500 espèces, comparable à la forêt de Paracou. Echantillon de 4000 arbres (6 ha de forêt).
 
 ```{r, out.width='80%'}
 library("entropart")
