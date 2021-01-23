@@ -17,13 +17,13 @@ jobs:
         uses: r-lib/actions/setup-pandoc@v1
       - name: Install R Markdown
         run: |
+          options(pkgType = "binary")
+          options(install.packages.check.source = "no")
           install.packages(c("remotes", "bookdown", "formatR", "tinytex"))
           tinytex::install_tinytex()
         shell: Rscript {0}
       - name: Install package EcoFoG
         run: |
-          # cairo for package gdtools
-          brew install cairo
           Rscript -e 'remotes::install_github("EcoFoG/EcoFoG")'
       - name: Install dependencies
         run: remotes::install_deps(dependencies = TRUE)
